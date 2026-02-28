@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Songfess — confess through music</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&family=Syne:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #05050f;
+    --surface: #0c0c1e;
+    --surface2: #10102a;
+    --border: rgba(255,255,255,0.07);
+    --text: #e8e4f0;
+    --muted: rgba(232,228,240,0.4);
+    --accent: #7c6aff;
+    --accent2: #c084fc;
+    --star: rgba(255,255,255,0.85);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Cormorant Garamond', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* Stars */
+  .stars {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .star {
+    position: absolute;
+    border-radius: 50%;
+    background: var(--star);
+    animation: twinkle var(--dur) ease-in-out infinite alternate;
+    opacity: var(--op);
+  }
+  @keyframes twinkle {
+    from { opacity: var(--op); transform: scale(1); }
+    to { opacity: calc(var(--op) * 0.2); transform: scale(0.6); }
+  }
+
+  /* Nebula blobs */
+  .nebula {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .nebula-1 {
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(124,106,255,0.12) 0%, transparent 70%);
+    top: -100px; right: -200px;
+    animation: drift 20s ease-in-out infinite alternate;
+  }
+  .nebula-2 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(192,132,252,0.08) 0%, transparent 70%);
+    bottom: 100px; left: -150px;
+    animation: drift 25s ease-in-out infinite alternate-reverse;
+  }
+  .nebula-3 {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(56,189,248,0.06) 0%, transparent 70%);
+    top: 40%; left: 40%;
+    animation: drift 30s ease-in-out infinite alternate;
+  }
+  @keyframes drift {
+    from { transform: translate(0, 0); }
+    to { transform: translate(30px, 20px); }
+  }
+
+  /* Layout */
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* Nav */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(to bottom, rgba(5,5,15,0.9) 0%, transparent 100%);
+    backdrop-filter: blur(2px);
+  }
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 0.05em;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .logo span { color: var(--accent); }
+  .nav-links {
+    display: flex;
+    gap: 28px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  /* Hero */
+  .hero {
+    padding-top: 160px;
+    padding-bottom: 80px;
+    text-align: center;
+  }
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.2s;
+  }
+  .hero h1 {
+    font-size: clamp(48px, 8vw, 80px);
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.4s;
+  }
+  .hero h1 em {
+    font-style: italic;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-sub {
+    font-size: 18px;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--muted);
+    max-width: 420px;
+    margin: 0 auto 48px;
+    line-height: 1.6;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.6s;
+  }
+  .hero-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.8s;
+  }
+  .btn-primary {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 14px 32px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.85; transform: translateY(-1px); }
+  .btn-secondary {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 14px 32px;
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .btn-secondary:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+  /* Divider */
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .section-label-text { transition: opacity 0.6s ease; }
+  .section-label-text.fade { opacity: 0; }
+  .section-label::before, .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Cards */
+  .feed {
+    padding-bottom: 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.6s ease forwards;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .card:hover {
+    border-color: rgba(124,106,255,0.3);
+    transform: translateY(-2px);
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(124,106,255,0.4), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .card:hover::before { opacity: 1; }
+
+  .card:nth-child(1) { animation-delay: 1s; }
+  .card:nth-child(2) { animation-delay: 1.15s; }
+  .card:nth-child(3) { animation-delay: 1.3s; }
+  .card:nth-child(4) { animation-delay: 1.45s; }
+  .card:nth-child(5) { animation-delay: 1.6s; }
+
+  .card-to {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-to::before {
+    content: '✦';
+    font-size: 8px;
+    opacity: 0.6;
+  }
+
+  .card-message {
+    font-size: clamp(20px, 3.5vw, 26px);
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--text);
+    margin-bottom: 24px;
+    letter-spacing: 0.01em;
+  }
+
+  .card-song {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--surface2);
+    border-radius: 2px;
+    border: 1px solid var(--border);
+  }
+  .song-art {
+    width: 44px;
+    height: 44px;
+    border-radius: 2px;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+  .song-info { flex: 1; min-width: 0; }
+  .song-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .song-artist {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .spotify-icon {
+    color: #1DB954;
+    font-size: 18px;
+    flex-shrink: 0;
+    opacity: 0.8;
+  }
+
+  .card-time {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 16px;
+    opacity: 0.6;
+  }
+
+  /* Submit modal */
+  .submit-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 50;
+    padding: 20px 32px;
+    background: linear-gradient(to top, rgba(5,5,15,0.98) 0%, transparent 100%);
+    display: flex;
+    justify-content: center;
+  }
+  .submit-hint {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: center;
+  }
+  .submit-hint a {
+    color: var(--accent2);
+    text-decoration: none;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+
+  /* Audio preview */
+  .song-art-wrap { position: relative; flex-shrink: 0; width: 44px; height: 44px; }
+  .song-art-wrap img { width: 100%; height: 100%; object-fit: cover; border-radius: 2px; }
+  .play-btn {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.55); border-radius: 2px; opacity: 0; transition: opacity 0.2s;
+    cursor: pointer; border: none; padding: 0;
+  }
+  .song-art-wrap:hover .play-btn { opacity: 1; }
+  .play-btn svg { width: 16px; height: 16px; fill: #fff; }
+  .play-btn.playing { opacity: 1; background: rgba(124,106,255,0.7); }
+  .play-btn.no-preview { display: none; }
+  @keyframes wave { 0%,100% { transform: scaleY(0.4); } 50% { transform: scaleY(1); } }
+  .wave-bars { display: flex; align-items: center; gap: 2px; }
+  .wave-bars span { display: block; width: 2px; height: 12px; background: #fff; border-radius: 2px; animation: wave 0.8s ease-in-out infinite; }
+  .wave-bars span:nth-child(2) { animation-delay: 0.15s; }
+  .wave-bars span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Scrollbar */
+
+  /* Mobile */
+  @media (max-width: 600px) {
+    nav { padding: 16px 20px; }
+    .nav-links { gap: 16px; }
+    .nav-links a { font-size: 10px; letter-spacing: 0.06em; }
+    .logo { font-size: 15px; }
+    .wrapper { padding: 120px 16px 80px; }
+    .song-art-wrap { width: 40px !important; height: 40px !important; }
+    .card-song { padding: 10px 12px; gap: 10px; }
+    .card-message { font-size: 18px; }
+    .submit-bar { padding: 16px 20px; }
+  }
+
+  @media (max-width: 480px) {
+    .nav-links { gap: 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 2px; }
+    .nav-links::-webkit-scrollbar { display: none; }
+    .nav-links a { font-size: 9px; }
+    .logo { font-size: 14px; }
+    .hero h1, .page-title { font-size: 36px; }
+    .card-song { flex-wrap: nowrap; }
+    .song-art, .song-art-wrap { width: 36px !important; height: 36px !important; min-width: 36px; }
+  }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- Stars -->
+<div class="stars" id="stars"></div>
+
+<!-- Nebula -->
+<div class="nebula nebula-1"></div>
+<div class="nebula nebula-2"></div>
+<div class="nebula nebula-3"></div>
+
+<!-- Nav -->
+<nav>
+  <a href="/" class="logo">song<span>fess</span></a>
+  <ul class="nav-links">
+    <li><a href="/browse">browse</a></li>
+    <li><a href="/confess">confess</a></li>
+    <li><a href="/contact">contact</a></li>
+    <li><a href="/about">about</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<div class="wrapper">
+  <section class="hero">
+    <p class="hero-eyebrow">✦ &nbsp; say it through a song &nbsp; ✦</p>
+    <h1>confess what words<br>can't <em>carry</em></h1>
+    <p class="hero-sub">send a song anonymously. let music say what you never could.</p>
+    <div class="hero-actions">
+      <a href="/confess" class="btn-primary">send a confession</a>
+      <a href="/browse" class="btn-secondary">read confessions</a>
+    </div>
+  </section>
+
+  <!-- Feed -->
+  <section id="feed">
+    <div class="section-label"><span class="section-label-text" id="floatingLabel">floating in the void</span></div>
+    <div class="feed" id="feed">
+      <div class="spinner" id="feedSpinner" style="display:block;width:20px;height:20px;border:2px solid rgba(255,255,255,0.07);border-top-color:#7c6aff;border-radius:50%;animation:spin 0.6s linear infinite;margin:40px auto;"></div>
+    </div></div>
+
+<!-- Bottom bar -->
+<div class="submit-bar">
+  <p class="submit-hint">have something to confess? <a href="/confess">send it into the void →</a></p>
+</div>
+
+<script>
+  // Generate stars
+  const starsEl = document.getElementById('stars');
+  const count = 180;
+  for (let i = 0; i < count; i++) {
+    const star = document.createElement('div');
+    star.classList.add('star');
+    const size = Math.random() * 2 + 0.5;
+    star.style.cssText = `
+      width: ${size}px;
+      height: ${size}px;
+      left: ${Math.random() * 100}%;
+      top: ${Math.random() * 100}%;
+      --op: ${Math.random() * 0.6 + 0.1};
+      --dur: ${Math.random() * 4 + 2}s;
+      animation-delay: ${Math.random() * 5}s;
+    `;
+    starsEl.appendChild(star);
+  }
+
+  // Random floating label
+  async function loadFloatingLabel() {
+    try {
+      const res = await fetch('/api/confessions/random');
+      const data = await res.json();
+      if (!Array.isArray(data) || data.length === 0) return;
+      const el = document.getElementById('floatingLabel');
+      let i = 0;
+      function cycle() {
+        el.classList.add('fade');
+        setTimeout(() => {
+          const pick = data[i % data.length];
+          const preview = pick.message.length > 60 ? pick.message.slice(0, 60) + '...' : pick.message;
+          el.textContent = '"' + preview + '" — to ' + pick.recipient;
+          el.classList.remove('fade');
+          i++;
+        }, 600);
+      }
+      setTimeout(cycle, 2000);
+      setInterval(cycle, 6000);
+    } catch (e) { /* silently fail, default text stays */ }
+  }
+  loadFloatingLabel();
+
+  // Load real confessions
+  function timeAgo(dateStr) {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    const hrs = Math.floor(mins / 60);
+    const days = Math.floor(hrs / 24);
+    if (mins < 1) return 'just now';
+    if (mins < 60) return mins + 'm ago';
+    if (hrs < 24) return hrs + 'h ago';
+    if (days < 7) return days + 'd ago';
+    return new Date(dateStr).toLocaleDateString('en-MY', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  async function loadFeed() {
+    try {
+      const res = await fetch('/api/confessions?limit=5&random=true');
+      const data = await res.json();
+      const feed = document.getElementById('feed');
+      feed.innerHTML = '';
+
+      if (!data.data || data.data.length === 0) {
+        feed.innerHTML = '<p style="text-align:center;font-style:italic;color:var(--muted);padding:40px 0;">the void is quiet... be the first to confess.</p>';
+        return;
+      }
+
+      data.data.forEach(function(c, i) {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.style.animationDelay = (i * 0.1) + 's';
+        const previewClass = c.preview_url ? '' : 'no-preview';
+        card.innerHTML =
+          '<div class="card-to">to: ' + c.recipient + '</div>' +
+          '<div class="card-message">' + c.message + '</div>' +
+          '<div class="card-song">' +
+            '<div class="song-art-wrap" style="background:linear-gradient(135deg,#7c6aff,#c084fc);border-radius:2px;">' +
+              (c.song_cover ? '<img src="' + c.song_cover + '">' : '') +
+              '<button class="play-btn ' + previewClass + '" onclick="togglePreview(event, \'' + (c.preview_url || '') + '\', this)">' +
+                '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>' +
+              '</button>' +
+            '</div>' +
+            '<div class="song-info">' +
+              '<div class="song-title">' + c.song_title + '</div>' +
+              '<div class="song-artist">' + c.song_artist + '</div>' +
+            '</div>' +
+            '<div class="spotify-icon">&#9679;</div>' +
+          '</div>' +
+          '<div class="card-time">' + timeAgo(c.created_at) + '</div>';
+        feed.appendChild(card);
+      });
+    } catch (e) {
+      document.getElementById('feed').innerHTML = '';
+    }
+  }
+  loadFeed();
+
+  // Audio preview
+  let currentAudio = null;
+  let currentBtn = null;
+
+  function togglePreview(e, url, btn) {
+    e.preventDefault(); e.stopPropagation();
+    if (!url) return;
+    if (currentAudio && currentBtn === btn) {
+      currentAudio.pause(); currentAudio = null;
+      btn.classList.remove('playing');
+      btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+      currentBtn = null; return;
+    }
+    if (currentAudio) {
+      currentAudio.pause();
+      currentBtn.classList.remove('playing');
+      currentBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+    }
+    const audio = new Audio(url);
+    audio.volume = 0.7; audio.play();
+    currentAudio = audio; currentBtn = btn;
+    btn.classList.add('playing');
+    btn.innerHTML = '<div class="wave-bars"><span></span><span></span><span></span></div>';
+    audio.onended = () => {
+      btn.classList.remove('playing');
+      btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+      currentAudio = null; currentBtn = null;
+    };
+  }
+</script>
+</body>
+</html>

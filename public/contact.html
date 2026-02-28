@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>contact — songfess</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&family=Syne:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #05050f; --surface: #0c0c1e; --surface2: #10102a;
+    --border: rgba(255,255,255,0.07); --text: #e8e4f0;
+    --muted: rgba(232,228,240,0.4); --accent: #7c6aff; --accent2: #c084fc;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Cormorant Garamond', serif; min-height: 100vh; overflow-x: hidden; }
+  .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+  .star { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.85); animation: twinkle var(--dur) ease-in-out infinite alternate; opacity: var(--op); }
+  @keyframes twinkle { from { opacity: var(--op); } to { opacity: calc(var(--op) * 0.2); transform: scale(0.6); } }
+  .nebula { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; }
+  .nebula-1 { width: 600px; height: 600px; background: radial-gradient(circle, rgba(124,106,255,0.12) 0%, transparent 70%); top: -100px; right: -200px; animation: drift 20s ease-in-out infinite alternate; }
+  .nebula-2 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(192,132,252,0.08) 0%, transparent 70%); bottom: 100px; left: -150px; animation: drift 25s ease-in-out infinite alternate-reverse; }
+  @keyframes drift { from { transform: translate(0,0); } to { transform: translate(30px,20px); } }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 20px 32px; display: flex; align-items: center; justify-content: space-between; background: linear-gradient(to bottom, rgba(5,5,15,0.9) 0%, transparent 100%); backdrop-filter: blur(2px); }
+  .logo { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: 0.05em; color: var(--text); text-decoration: none; }
+  .logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 28px; list-style: none; }
+  .nav-links a { font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+  .nav-links a:hover, .nav-links a.active { color: var(--text); }
+  .wrapper { position: relative; z-index: 1; max-width: 600px; margin: 0 auto; padding: 140px 24px 100px; }
+  .page-eyebrow { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; opacity: 0; animation: fadeUp 0.6s ease forwards 0.1s; }
+  .page-title { font-size: clamp(40px, 7vw, 64px); font-weight: 300; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 16px; opacity: 0; animation: fadeUp 0.6s ease forwards 0.2s; }
+  .page-title em { font-style: italic; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .page-sub { font-size: 17px; font-weight: 300; font-style: italic; color: var(--muted); margin-bottom: 64px; line-height: 1.6; opacity: 0; animation: fadeUp 0.6s ease forwards 0.3s; }
+
+  .links { display: flex; flex-direction: column; gap: 16px; }
+
+  .link-card {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 24px 28px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 4px;
+    text-decoration: none; transition: border-color 0.3s, transform 0.3s;
+    opacity: 0; animation: fadeUp 0.6s ease forwards;
+    position: relative; overflow: hidden;
+  }
+  .link-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(124,106,255,0.4), transparent); opacity: 0; transition: opacity 0.3s; }
+  .link-card:hover::before { opacity: 1; }
+  .link-card:hover { border-color: rgba(124,106,255,0.3); transform: translateY(-2px); }
+  .link-card:nth-child(1) { animation-delay: 0.4s; }
+  .link-card:nth-child(2) { animation-delay: 0.5s; }
+  .link-card:nth-child(3) { animation-delay: 0.6s; }
+
+  .link-info { display: flex; flex-direction: column; gap: 6px; }
+  .link-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); }
+  .link-value { font-size: 20px; font-weight: 300; color: var(--text); }
+  .link-arrow { font-size: 20px; color: var(--muted); transition: color 0.2s, transform 0.2s; }
+  .link-card:hover .link-arrow { color: var(--accent2); transform: translateX(4px); }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Mobile */
+  @media (max-width: 600px) {
+    nav { padding: 16px 20px; }
+    .nav-links { gap: 16px; }
+    .nav-links a { font-size: 10px; letter-spacing: 0.06em; }
+    .logo { font-size: 15px; }
+    .wrapper { padding: 120px 16px 80px; }
+    .song-art-wrap { width: 40px !important; height: 40px !important; }
+    .card-song { padding: 10px 12px; gap: 10px; }
+    .card-message { font-size: 18px; }
+    .submit-bar { padding: 16px 20px; }
+  }
+
+  @media (max-width: 480px) {
+    .nav-links { gap: 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 2px; }
+    .nav-links::-webkit-scrollbar { display: none; }
+    .nav-links a { font-size: 9px; }
+    .logo { font-size: 14px; }
+    .hero h1, .page-title { font-size: 36px; }
+    .card-song { flex-wrap: nowrap; }
+    .song-art, .song-art-wrap { width: 36px !important; height: 36px !important; min-width: 36px; }
+  }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 2px; }
+</style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+<div class="nebula nebula-1"></div>
+<div class="nebula nebula-2"></div>
+
+<nav>
+  <a href="/" class="logo">song<span>fess</span></a>
+  <ul class="nav-links">
+    <li><a href="/browse">browse</a></li>
+    <li><a href="/confess">confess</a></li>
+    <li><a href="/contact" class="active">contact</a></li>
+    <li><a href="/about">about</a></li>
+  </ul>
+</nav>
+
+<div class="wrapper">
+  <p class="page-eyebrow">✦ &nbsp; get in touch</p>
+  <h1 class="page-title">find me in the <em>universe.</em></h1>
+  <p class="page-sub">built by dark. reach out through any of these.</p>
+
+  <div class="links">
+    <a href="https://dbyt.my.id" target="_blank" rel="noopener" class="link-card">
+      <div class="link-info">
+        <div class="link-label">portfolio</div>
+        <div class="link-value">dbyt.my.id</div>
+      </div>
+      <div class="link-arrow">→</div>
+    </a>
+
+    <a href="https://go.dbyt.my.id/carrd" target="_blank" rel="noopener" class="link-card">
+      <div class="link-info">
+        <div class="link-label">carrd</div>
+        <div class="link-value">go.dbyt.my.id/carrd</div>
+      </div>
+      <div class="link-arrow">→</div>
+    </a>
+
+    <a href="mailto:dark@dbyt.my.id" class="link-card">
+      <div class="link-info">
+        <div class="link-label">email</div>
+        <div class="link-value">dark@dbyt.my.id</div>
+      </div>
+      <div class="link-arrow">→</div>
+    </a>
+  </div>
+</div>
+
+<script>
+  const starsEl = document.getElementById('stars');
+  for (let i = 0; i < 150; i++) {
+    const s = document.createElement('div');
+    s.classList.add('star');
+    const size = Math.random() * 2 + 0.5;
+    s.style.cssText = 'width:'+size+'px;height:'+size+'px;left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;--op:'+(Math.random()*0.6+0.1)+';--dur:'+(Math.random()*4+2)+'s;animation-delay:'+(Math.random()*5)+'s;';
+    starsEl.appendChild(s);
+  }
+</script>
+</body>
+</html>
