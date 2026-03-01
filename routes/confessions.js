@@ -81,7 +81,7 @@ router.get('/search', async (req, res) => {
 
   try {
     const [rows] = await pool.query(
-      'SELECT * FROM confessions WHERE LOWER(recipient) = LIKE LOWER(?) ORDER BY created_at DESC',
+      'SELECT * FROM confessions WHERE LOWER(recipient) LIKE LOWER(?) ORDER BY created_at DESC',
       ['%' + name.trim() + '%']
     );
     res.json({ data: rows });
