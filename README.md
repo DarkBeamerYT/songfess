@@ -1,8 +1,8 @@
-# songfess by dark 🎵
+# songfess 🎵
 
 > say what you can't with words. send it through a song.
 
-**songfess** is an anonymous music confession platform — search for a song, write a short message, and send it into the void. anyone can look up a name and find confessions sent to them.
+**songfess** is an anonymous music confession platform; search for a song, write a short message, and send it into the void. anyone can look up a name and find confessions sent to them.
 
 live at [songfess.dbyt.my.id](https://songfess.dbyt.my.id) · built by [dark](https://dbyt.my.id) · inspired by [sendthesong.xyz](https://sendthesong.xyz)
 
@@ -160,5 +160,6 @@ RewriteRule ^(.*)$ http://127.0.0.1:3000%{REQUEST_URI} [P,L]
 MIT — do whatever you want with it, just credit me :)
 
 ---
+
 
 made with 🖤 by [dark](https://dbyt.my.id)
